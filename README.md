@@ -222,6 +222,8 @@ This application can be deployed to:
 - Digital Ocean
 - Any platform supporting Python/FastAPI applications
 
+I used Railway and here is the link https://web-production-3e4e.up.railway.app/docs
+
 
 
 ## License
