@@ -35,10 +35,9 @@ class StringRecord(BaseModel):
         # Generate SHA256 hash
         sha_hash = hashlib.sha256(value.encode('utf-8')).hexdigest()
         
-        # Check if palindrome (case-insensitive, ignore spaces and punctuation)
-        # Keep only alphanumeric characters for palindrome check
-        cleaned = ''.join(char.lower() for char in value if char.isalnum())
-        is_palindrome = cleaned == cleaned[::-1] if cleaned else False
+        # Check if palindrome (case-insensitive only, keep spaces and punctuation)
+        value_lower = value.lower()
+        is_palindrome = value_lower == value_lower[::-1]
         
         # Calculate length
         length = len(value)
@@ -46,7 +45,7 @@ class StringRecord(BaseModel):
         # Count unique characters
         unique_characters = len(set(value))
         
-        # Count words
+        # Count words (split by whitespace)
         word_count = len(value.split())
         
         # Create character frequency map

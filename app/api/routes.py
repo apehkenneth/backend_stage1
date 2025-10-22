@@ -147,7 +147,7 @@ async def filter_by_natural_language(query: str = Query(..., description="Natura
             data = [d for d in data if d["properties"]["length"] <= parsed_filters["max_length"]]
         
         if "contains_character" in parsed_filters:
-            data = [d for d in data if parsed_filters["contains_character"] in d["value"].lower()]
+            data = [d for d in data if parsed_filters["contains_character"] in d["value"]]
         
         return {
             "data": data,
@@ -227,9 +227,9 @@ async def get_strings(
         data = [d for d in data if d["properties"]["word_count"] == word_count]
         filters_applied["word_count"] = word_count
     
-    # Filter by contains_character (case-insensitive)
+    # Filter by contains_character (case-sensitive)
     if contains_character is not None:
-        data = [d for d in data if contains_character.lower() in d["value"].lower()]
+        data = [d for d in data if contains_character in d["value"]]
         filters_applied["contains_character"] = contains_character
     
     return {
