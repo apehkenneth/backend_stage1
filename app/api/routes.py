@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status, Body
 from typing import List, Optional, Dict, Any
 import json
 import os
@@ -36,7 +36,7 @@ def save_data(data: List[dict]):
 
 
 @router.post("/strings", response_model=StringRecord, status_code=status.HTTP_201_CREATED, tags=["Strings"])
-async def analyze_string(payload: dict):
+async def analyze_string(payload: Dict[str, Any] = Body(...)):
     """
     Create and analyze a new string
     
@@ -51,11 +51,17 @@ async def analyze_string(payload: dict):
         409: If string already exists (duplicate hash)
         422: If 'value' is not a string
     """
+    # Check if 'value' key exists
+    if "value" not in payload:
+        raise HTTPException(status_code=400, detail="Missing 'value' field")
+    
     value = payload.get("value")
     
+    # Check if value is None
     if value is None:
         raise HTTPException(status_code=400, detail="Missing 'value' field")
     
+    # Check if value is a string
     if not isinstance(value, str):
         raise HTTPException(status_code=422, detail="Invalid data type for 'value' (must be string)")
 
@@ -141,7 +147,7 @@ async def filter_by_natural_language(query: str = Query(..., description="Natura
             data = [d for d in data if d["properties"]["length"] <= parsed_filters["max_length"]]
         
         if "contains_character" in parsed_filters:
-            data = [d for d in data if parsed_filters["contains_character"] in d["value"]]
+            data = [d for d in data if parsed_filters["contains_character"] in d["value"].lower()]
         
         return {
             "data": data,
@@ -221,9 +227,9 @@ async def get_strings(
         data = [d for d in data if d["properties"]["word_count"] == word_count]
         filters_applied["word_count"] = word_count
     
-    # Filter by contains_character
+    # Filter by contains_character (case-insensitive)
     if contains_character is not None:
-        data = [d for d in data if contains_character in d["value"]]
+        data = [d for d in data if contains_character.lower() in d["value"].lower()]
         filters_applied["contains_character"] = contains_character
     
     return {

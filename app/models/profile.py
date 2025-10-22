@@ -35,9 +35,10 @@ class StringRecord(BaseModel):
         # Generate SHA256 hash
         sha_hash = hashlib.sha256(value.encode('utf-8')).hexdigest()
         
-        # Check if palindrome (case-insensitive)
-        cleaned = value.lower().replace(" ", "")
-        is_palindrome = cleaned == cleaned[::-1]
+        # Check if palindrome (case-insensitive, ignore spaces and punctuation)
+        # Keep only alphanumeric characters for palindrome check
+        cleaned = ''.join(char.lower() for char in value if char.isalnum())
+        is_palindrome = cleaned == cleaned[::-1] if cleaned else False
         
         # Calculate length
         length = len(value)
